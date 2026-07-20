@@ -1,10 +1,19 @@
+using FullStack_BrianBuenJA.Services;
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddScoped<IGreetingService, GreetingService>();
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
+app.Use(async(context,next)=>
+{
+    var start = DateTime.UtcNow;
+    await next();
+    var elapsed = DateTime.UtcNow - start;
+    Console.Write($"{context.Request.Method}{context.Request.Path}=>{elapsed.TotalMilliseconds:F1}s");
+});
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
